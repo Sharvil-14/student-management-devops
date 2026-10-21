@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudentHub | Management Dashboard</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">S</div>
+            <div>
+                <h2>StudentHub</h2>
+                <span>Management Portal</span>
+            </div>
+        </div>
+
+        <div class="nav-label">WORKSPACE</div>
+        <a class="nav-item active" href="/">
+            <span>▦</span> Dashboard
+        </a>
+        <a class="nav-item" href="#students">
+            <span>♙</span> Students
+        </a>
+        <a class="nav-item" href="#add-student">
+            <span>＋</span> Add Student
+        </a>
+
+        <div class="sidebar-bottom">
+            <div class="status-dot"></div>
+            <div>
+                <strong>System Online</strong>
+                <span>Student Management</span>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">OVERVIEW / DASHBOARD</p>
+                <h1>Student Dashboard</h1>
+                <p class="subtitle">Manage your student records in one place.</p>
+            </div>
+            <a class="top-button" href="#add-student">＋ Add Student</a>
+        </header>
+
+        <section class="welcome">
+            <div>
+                <span class="welcome-tag">STUDENT MANAGEMENT SYSTEM</span>
+                <h2>Welcome to your dashboard 👋</h2>
+                <p>Keep your student information organized and up to date.</p>
+            </div>
+            <div class="welcome-art" aria-hidden="true">🎓</div>
+        </section>
+
+        <section class="stats">
+            <article class="stat-card">
+                <div class="stat-icon purple">♙</div>
+                <p>Total Students</p>
+                <h2>{{ students|length }}</h2>
+                <span class="stat-note">Currently registered</span>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-icon green">✓</div>
+                <p>System Status</p>
+                <h2 class="online-text">Online</h2>
+                <span class="stat-note">Application running</span>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-icon orange">⌘</div>
+                <p>Platform</p>
+                <h2>Flask</h2>
+                <span class="stat-note">Python web application</span>
+            </article>
+        </section>
+
+        <section class="content-grid">
+            <article class="panel add-panel" id="add-student">
+                <div class="panel-heading">
+                    <div>
+                        <h2>Add New Student</h2>
+                        <p>Enter the student's details below.</p>
+                    </div>
+                    <span class="heading-icon">＋</span>
+                </div>
+
+                <form action="/add" method="POST" class="student-form">
+                    <label for="name">Student Name</label>
+                    <input id="name" name="name"
+                           placeholder="e.g. Sharvil Gharat"
+                           maxlength="100" required>
+
+                    <label for="course">Course / Department</label>
+                    <input id="course" name="course"
+                           placeholder="e.g. AI & Data Science"
+                           maxlength="100" required>
+
+                    <button type="submit" class="primary-button">
+                        Add Student <span>→</span>
+                    </button>
+                </form>
+            </article>
+
+            <article class="panel info-panel">
+                <div class="panel-heading">
+                    <div>
+                        <h2>Application Overview</h2>
+                        <p>Project information</p>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-symbol">⚡</span>
+                    <div>
+                        <strong>DevOps Ready</strong>
+                        <p>Designed for CI/CD automation.</p>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <span class="info-symbol">🐳</span>
+                    <div>
+                        <strong>Docker Compatible</strong>
+                        <p>Packaged for container deployment.</p>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <span class="info-symbol">📊</span>
+                    <div>
+                        <strong>Monitoring Enabled</strong>
+                        <p>Prometheus metrics endpoint available.</p>
+                    </div>
+                </div>
+
+                <a href="/health" class="health-link" target="_blank">
+                    Check application health ↗
+                </a>
+            </article>
+        </section>
+
+        <section class="panel table-panel" id="students">
+            <div class="panel-heading table-heading">
+                <div>
+                    <h2>Student Records</h2>
+                    <p>View and manage registered students.</p>
+                </div>
+                <span class="count-badge">
+                    {{ students|length }} records
+                </span>
+            </div>
+
+            {% if students %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>STUDENT</th>
+                            <th>COURSE / DEPARTMENT</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td><span class="id-badge">#{{ student.id }}</span></td>
+                            <td>
+                                <div class="student-cell">
+                                    <div class="avatar">
+                                        {{ student.name[0]|upper }}
+                                    </div>
+                                    <strong>{{ student.name }}</strong>
+                                </div>
+                            </td>
+                            <td>{{ student.course }}</td>
+                            <td>
+                                <form action="/delete/{{ student.id }}"
+                                      method="POST"
+                                      onsubmit="return confirm('Delete this student?')">
+                                    <button class="delete-button" type="submit">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">♙</div>
+                <h3>No students yet</h3>
+                <p>Add your first student using the form above.</p>
+                <a href="#add-student">＋ Add your first student</a>
+            </div>
+            {% endif %}
+        </section>
+
+        <footer>
+            <span>StudentHub · DevOps Mini-Project</span>
+            <span>Built with Flask & Python</span>
+        </footer>
+    </main>
+</body>
+</html>
